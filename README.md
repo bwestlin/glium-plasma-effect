@@ -1,4 +1,4 @@
-# GLium Plasma Effect #
+# Glium Plasma Effect #
 
 An oldschool graphical plasma effect done in [Rust](https://www.rust-lang.org/)
 with [Glium](https://github.com/tomaka/glium).
