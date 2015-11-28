@@ -29,6 +29,7 @@ impl Plasma {
         }
     }
 
+    // TODO Make time dependent on real time
     pub fn render(&mut self, buf: &mut Vec<(u8, u8, u8, u8)>) {
 
         self.time += 0.1;
