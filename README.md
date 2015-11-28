@@ -13,7 +13,7 @@ one way to do it is to manipulate the pixels of a texture and then draw the
 texture on the screen. It's most likely not the most efficient way but still a way.
 
 Example with a 2x2 texture:
-```
+```rust
 let p_buffer = glium::texture::pixel_buffer::PixelBuffer::new_empty(&display, 4);
 p_buffer.write(&[
     (255u8, 0u8, 0u8, 255u8),
