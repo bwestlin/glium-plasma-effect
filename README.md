@@ -8,7 +8,7 @@ which I made in JavaScript previously.
 Here's how it looks:
 ![Screenshot](screenshot.png)
 
-Since the effect needs to manipulate pixels and Glium as an OpenGL wrapper
+Since the effect needs to manipulate pixels and Glium is an OpenGL wrapper
 one way to do it is to manipulate the pixels of a texture and then draw the
 texture on the screen. It's most likely not the most efficient way but still a way.
 
