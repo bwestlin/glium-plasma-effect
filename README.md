@@ -36,8 +36,9 @@ It need rust 1.5.0 (beta) or later. Suggestion is to use
 How to run with Multirust:
 ```
 multirust override beta
-cargo run
+cargo run --release
 ```
+Running without the `--release` flag will be quite slow.
 
 ## Licence ##
 
