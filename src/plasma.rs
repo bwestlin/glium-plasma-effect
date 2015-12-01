@@ -44,7 +44,6 @@ impl MathLookup {
 pub struct Plasma {
     width: u32,
     height: u32,
-    time: f64,
     ml: MathLookup
 }
 
@@ -53,7 +52,6 @@ impl Plasma {
         Plasma {
             width: w,
             height: h,
-            time: 0.0,
             ml: MathLookup::new()
         }
     }
