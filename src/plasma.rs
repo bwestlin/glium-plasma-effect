@@ -72,8 +72,8 @@ impl Plasma {
 
         let c_mul = 16.5 + sin(time / 2.0) * 15.5;
 
-        for y in 0..(h / 1) {
-            for x in 0..(w / 1) {
+        for y in 0..h {
+            for x in 0..w {
                 let fx = x as f64;
                 let fy = y as f64;
 
