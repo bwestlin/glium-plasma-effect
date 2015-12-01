@@ -1,23 +1,51 @@
 use std::cmp;
+use std::f64::consts::PI;
 
-// TODO Make these functions faster
-#[inline]
-fn sin(a: f64) -> f64 {
-    a.sin()
+pub struct MathLookup {
+    sin_table: Vec<f64>,
+    cos_table: Vec<f64>,
+    sqrt_table: Vec<f64>
 }
-#[inline]
-fn cos(a: f64) -> f64 {
-    a.cos()
-}
-#[inline]
-fn dist(x: f64, y: f64, w: f64, h: f64) -> f64 {
-    ((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0)).sqrt()
+
+impl MathLookup {
+    fn new() -> MathLookup {
+        let mut sin_table = Vec::new();
+        for a in 0 .. 360 {
+            sin_table.push((a as f64 * PI / 180.0).sin())
+        }
+        let mut cos_table = Vec::new();
+        for a in 0 .. 360 {
+            cos_table.push((a as f64 * PI / 180.0).cos())
+        }
+        let mut sqrt_table = Vec::new();
+        for d in 0 .. 2000000 {
+            sqrt_table.push((d as f64).sqrt())
+        }
+        MathLookup {
+            sin_table: sin_table,
+            cos_table: cos_table,
+            sqrt_table: sqrt_table
+        }
+    }
+
+    fn sin(&self, a: f64) -> f64 {
+        self.sin_table[(a * 180.0 / PI) as usize % 360]
+    }
+
+    fn cos(&self, a: f64) -> f64 {
+        self.cos_table[(a * 180.0 / PI) as usize % 360]
+    }
+
+    fn sqrt(&self, d: f64) -> f64 {
+        self.sqrt_table[d as usize]
+    }
 }
 
 pub struct Plasma {
     width: u32,
     height: u32,
-    time: f64
+    time: f64,
+    ml: MathLookup
 }
 
 impl Plasma {
@@ -25,22 +53,27 @@ impl Plasma {
         Plasma {
             width: w,
             height: h,
-            time: 0.0
+            time: 0.0,
+            ml: MathLookup::new()
         }
     }
 
-    // TODO Make time dependent on real time
-    pub fn render(&mut self, buf: &mut Vec<(u8, u8, u8, u8)>) {
+    pub fn render(&mut self, buf: &mut Vec<(u8, u8, u8, u8)>, dt_ns: u64) {
 
-        self.time += 0.1;
-        let time = self.time;
+        let time = dt_ns as f64 / 1000000000.0;
         let w = self.width;
         let h = self.height;
 
+        let sin = |a: f64| self.ml.sin(a);
+        let cos = |a: f64| self.ml.cos(a);
+        let dist = |x: f64, y: f64, w: f64, h: f64| -> f64 {
+            self.ml.sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))
+        };
+
         let c_mul = 16.5 + sin(time / 2.0) * 15.5;
 
-        for y in 0..h {
-            for x in 0..w {
+        for y in 0..(h / 1) {
+            for x in 0..(w / 1) {
                 let fx = x as f64;
                 let fy = y as f64;
 

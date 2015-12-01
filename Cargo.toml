@@ -7,6 +7,7 @@ authors = ["Björn Westlin <bwestlin at gmail dot com>"]
 glium_sdl2 = "0.8"
 sdl2 = "0.9"
 rand = "0.3.12"
+time = "0.1"
 
 [dependencies.glium]
 version = "0.10"
