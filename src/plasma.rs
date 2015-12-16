@@ -34,7 +34,7 @@ impl Plasma {
 
         let c_mul = 16.5 + sin(time / 2.0) * 15.5;
 
-        for y in y_offset..(y_offset + y_height) {
+        for y in (y_offset..(y_offset + y_height)).rev() {
             for x in 0..w {
                 let fx = x as f64;
                 let fy = y as f64;
