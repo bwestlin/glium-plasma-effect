@@ -3,6 +3,7 @@ extern crate glium_sdl2;
 extern crate sdl2;
 extern crate time;
 extern crate scoped_threadpool;
+extern crate num_cpus;
 
 mod util;
 mod plasma;
@@ -54,7 +55,8 @@ fn main() {
     let mut last_stats_time_ns = start_time_ns;
     let stats_interval_ns = 1000000000; // Stats interval is 1 second
 
-    let n_chunks = 4;
+    let n_chunks = num_cpus::get() as u32 * 2;
+    println!("rendering {} chunks in parallel", n_chunks);
     let mut pool = scoped_threadpool::Pool::new(n_chunks);
 
     while running {
