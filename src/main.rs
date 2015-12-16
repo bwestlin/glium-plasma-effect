@@ -2,6 +2,7 @@ extern crate glium;
 extern crate glium_sdl2;
 extern crate sdl2;
 extern crate time;
+extern crate scoped_threadpool;
 
 mod util;
 mod plasma;
@@ -9,6 +10,7 @@ mod plasma;
 use glium_sdl2::DisplayBuild;
 use glium::Surface;
 use time::*;
+use std::thread;
 
 use util::*;
 use plasma::Plasma;
@@ -19,7 +21,7 @@ fn main() {
 
     let b_width = 480 as u32;
     let b_height = 320 as u32;
-    let n_pixels = b_width * b_width;
+    let n_pixels = b_width * b_height;
 
     let scr_width = b_width * 2;
     let scr_height = b_height * 2;
@@ -33,11 +35,12 @@ fn main() {
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     // The renderer of the plasma effect
-    let mut plasma = Plasma::new(b_width, b_height);
+    let plasma = &(Plasma::new(b_width, b_height));
 
     // Target buffer for for the plasma effect
     let mut e_buffer: Vec<(u8, u8, u8, u8)> = Vec::with_capacity(n_pixels as usize);
     e_buffer.resize(n_pixels as usize, (0u8, 0u8, 0u8, 0u8));
+    let e_buf_len = e_buffer.len();
 
     // Target pixel buffer for the effect
     let p_buffer = glium::texture::pixel_buffer::PixelBuffer::new_empty(&display, n_pixels as usize);
@@ -51,12 +54,22 @@ fn main() {
     let mut last_stats_time_ns = start_time_ns;
     let stats_interval_ns = 1000000000; // Stats interval is 1 second
 
+    let n_chunks = 4;
+    let mut pool = scoped_threadpool::Pool::new(n_chunks);
+
     while running {
         t_sampler.sample();
 
         // Perform rendering of plasa effect
         e_timer_render.measure(|| {
-            plasma.render(&mut e_buffer, precise_time_ns() - start_time_ns);
+            let delta_t = precise_time_ns() - start_time_ns;
+    
+            pool.scoped(|scope| {
+                for eb_slice in e_buffer.chunks_mut(e_buf_len / n_chunks as usize) {
+                    plasma.render(eb_slice, delta_t, 0, b_height / n_chunks);
+                }
+            });
+            //plasma.render(&mut e_buffer, precise_time_ns() - start_time_ns);
         });
 
         // Display it on screen

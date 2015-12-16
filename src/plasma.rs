@@ -19,7 +19,7 @@ impl Plasma {
     }
 
     // Render the plasma effect on a buffer
-    pub fn render(&mut self, buf: &mut Vec<(u8, u8, u8, u8)>, dt_ns: u64) {
+    pub fn render(&self, buf: &mut [(u8, u8, u8, u8)], dt_ns: u64, y_offset: u32, y_height: u32) {
 
         let time = dt_ns as f64 / 1000000000.0;
         let w = self.width;
@@ -33,7 +33,7 @@ impl Plasma {
 
         let c_mul = 16.5 + sin(time / 2.0) * 15.5;
 
-        for y in 0..h {
+        for y in y_offset..(y_offset + y_height) {
             for x in 0..w {
                 let fx = x as f64;
                 let fy = y as f64;
@@ -46,7 +46,7 @@ impl Plasma {
 
                 let color = (((4.0 + value) * (32.0 / c_mul)).floor() * c_mul) as u32;
 
-                let p_pos = (((h - y - 1) * w) + (x)) as usize;
+                let p_pos = (((y_height - (y - y_offset) - 1) * w) + (x)) as usize;
                 buf[p_pos] = (
                     (cmp::min(color << 1, 255)) as u8,
                     color as u8,
