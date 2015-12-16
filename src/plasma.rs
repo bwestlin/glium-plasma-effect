@@ -28,7 +28,8 @@ impl Plasma {
         let sin = |a: f64| self.ml.sin(a);
         let cos = |a: f64| self.ml.cos(a);
         let dist = |x: f64, y: f64, w: f64, h: f64| -> f64 {
-            self.ml.sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))
+            //self.ml.sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))
+            ((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0)).sqrt()
         };
 
         let c_mul = 16.5 + sin(time / 2.0) * 15.5;
