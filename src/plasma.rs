@@ -3,8 +3,8 @@ use std::f64::consts::PI;
 
 pub struct MathLookup {
     sin_table: Vec<f64>,
-    cos_table: Vec<f64>,
-    sqrt_table: Vec<f64>
+    cos_table: Vec<f64>/*,
+    sqrt_table: Vec<f64>*/
 }
 
 impl MathLookup {
@@ -17,14 +17,16 @@ impl MathLookup {
         for a in 0 .. 360 {
             cos_table.push((a as f64 * PI / 180.0).cos())
         }
+        /*
         let mut sqrt_table = Vec::new();
         for d in 0 .. 2000000 {
             sqrt_table.push((d as f64).sqrt())
         }
+        */
         MathLookup {
             sin_table: sin_table,
-            cos_table: cos_table,
-            sqrt_table: sqrt_table
+            cos_table: cos_table/*,
+            sqrt_table: sqrt_table*/
         }
     }
 
@@ -36,9 +38,11 @@ impl MathLookup {
         self.cos_table[(a * 180.0 / PI) as usize % 360]
     }
 
+    /*
     fn sqrt(&self, d: f64) -> f64 {
         self.sqrt_table[d as usize]
     }
+    */
 }
 
 pub struct Plasma {
@@ -65,7 +69,8 @@ impl Plasma {
         let sin = |a: f64| self.ml.sin(a);
         let cos = |a: f64| self.ml.cos(a);
         let dist = |x: f64, y: f64, w: f64, h: f64| -> f64 {
-            self.ml.sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))
+            //self.ml.sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))
+            ((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0)).sqrt()
         };
 
         let c_mul = 16.5 + sin(time / 2.0) * 15.5;
