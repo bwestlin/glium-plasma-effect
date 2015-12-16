@@ -94,7 +94,7 @@ struct FpsCounter {
 impl FpsCounter {
     fn new() -> FpsCounter {
         FpsCounter {
-            n_samples: 10,
+            n_samples: 100,
             time_samples: Vec::new()
         }
     }
