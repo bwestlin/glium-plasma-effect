@@ -63,10 +63,10 @@ fn main() {
         // Perform rendering of plasa effect
         e_timer_render.measure(|| {
             let delta_t = precise_time_ns() - start_time_ns;
-    
+
             pool.scoped(|scope| {
                 for eb_slice in e_buffer.chunks_mut(e_buf_len / n_chunks as usize) {
-                    plasma.render(eb_slice, delta_t, 0, b_height / n_chunks);
+                    scope.execute(move || plasma.render(eb_slice, delta_t, 0, b_height / n_chunks));
                 }
             });
             //plasma.render(&mut e_buffer, precise_time_ns() - start_time_ns);
