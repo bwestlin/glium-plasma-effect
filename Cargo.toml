@@ -8,6 +8,7 @@ glium_sdl2 = "0.8"
 sdl2 = "0.9"
 rand = "0.3.12"
 time = "0.1"
+scoped_threadpool = "0.1.6"
 
 [dependencies.glium]
 version = "0.10"
