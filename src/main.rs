@@ -58,8 +58,8 @@ fn main() {
         let delta_t = precise_time_ns() - start_time_ns;
 
         pool.scoped(|scope| {
-            for eb_slice in e_buffer.chunks_mut(e_buf_len / n_chunks as usize) {
-                scope.execute(move || plasma.render(eb_slice, delta_t, 0, b_height / n_chunks));
+            for (i, eb_slice) in e_buffer.chunks_mut(e_buf_len / n_chunks as usize).enumerate() {
+                scope.execute(move || plasma.render(eb_slice, delta_t, b_height - b_height / n_chunks * i as u32, b_height / n_chunks));
             }
         });
 
