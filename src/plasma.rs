@@ -1,49 +1,6 @@
 use std::cmp;
-use std::f64::consts::PI;
 
-pub struct MathLookup {
-    sin_table: Vec<f64>,
-    cos_table: Vec<f64>,
-    sqrt_table: Vec<f64>
-}
-
-impl MathLookup {
-    /// Constructs a new `MathLookup`.
-    fn new() -> MathLookup {
-        let mut sin_table = Vec::new();
-        for a in 0 .. 360 {
-            sin_table.push((a as f64 * PI / 180.0).sin())
-        }
-        let mut cos_table = Vec::new();
-        for a in 0 .. 360 {
-            cos_table.push((a as f64 * PI / 180.0).cos())
-        }
-        let mut sqrt_table = Vec::new();
-        for d in 0 .. 2000000 {
-            sqrt_table.push((d as f64).sqrt())
-        }
-        MathLookup {
-            sin_table: sin_table,
-            cos_table: cos_table,
-            sqrt_table: sqrt_table
-        }
-    }
-
-    /// Calculeate a sinus value using a lookup table
-    fn sin(&self, a: f64) -> f64 {
-        self.sin_table[(a * 180.0 / PI) as usize % 360]
-    }
-
-    /// Calculeate a coinus value using a lookup table
-    fn cos(&self, a: f64) -> f64 {
-        self.cos_table[(a * 180.0 / PI) as usize % 360]
-    }
-
-    /// Calculeate a square root value using a lookup table
-    fn sqrt(&self, d: f64) -> f64 {
-        self.sqrt_table[d as usize]
-    }
-}
+use util::MathLookup;
 
 pub struct Plasma {
     width: u32,
