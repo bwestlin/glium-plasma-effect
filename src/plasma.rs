@@ -8,6 +8,7 @@ pub struct MathLookup {
 }
 
 impl MathLookup {
+    /// Constructs a new `MathLookup`.
     fn new() -> MathLookup {
         let mut sin_table = Vec::new();
         for a in 0 .. 360 {
@@ -28,14 +29,17 @@ impl MathLookup {
         }
     }
 
+    /// Calculeate a sinus value using a lookup table
     fn sin(&self, a: f64) -> f64 {
         self.sin_table[(a * 180.0 / PI) as usize % 360]
     }
 
+    /// Calculeate a coinus value using a lookup table
     fn cos(&self, a: f64) -> f64 {
         self.cos_table[(a * 180.0 / PI) as usize % 360]
     }
 
+    /// Calculeate a square root value using a lookup table
     fn sqrt(&self, d: f64) -> f64 {
         self.sqrt_table[d as usize]
     }
@@ -48,6 +52,7 @@ pub struct Plasma {
 }
 
 impl Plasma {
+    /// Constructs a new `Plasma`.
     pub fn new(w: u32, h: u32) -> Plasma {
         Plasma {
             width: w,
@@ -56,6 +61,7 @@ impl Plasma {
         }
     }
 
+    // Render the plasma effect on a buffer
     pub fn render(&mut self, buf: &mut Vec<(u8, u8, u8, u8)>, dt_ns: u64) {
 
         let time = dt_ns as f64 / 1000000000.0;
