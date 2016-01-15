@@ -4,12 +4,14 @@ extern crate sdl2;
 extern crate time;
 
 mod plasma;
+mod util;
 
 use glium_sdl2::DisplayBuild;
 use glium::Surface;
 use time::*;
 
 use plasma::Plasma;
+use util::TimeSampler;
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -37,13 +39,13 @@ fn main() {
     let texture = glium::texture::Texture2d::empty(&display, b_width, b_height).unwrap();
     let p_buffer = glium::texture::pixel_buffer::PixelBuffer::new_empty(&display, n_pixels as usize);
 
-    let mut fps_counter = FpsCounter::new();
+    let mut t_sampler = TimeSampler::new(1000);
     let start_time_ns = precise_time_ns();
+    let mut last_sample_time_ns = start_time_ns;
+    let sample_interval_ns = 1000000000;
 
     while running {
-        fps_counter.frame_time(precise_time_ns());
-        let avg_fps = fps_counter.avg_fps();
-        println!("avg_fps={}", avg_fps);
+        t_sampler.sample();
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
@@ -53,6 +55,13 @@ fn main() {
         texture.as_surface().fill(&target, glium::uniforms::MagnifySamplerFilter::Linear);
 
         target.finish().unwrap();
+
+        if precise_time_ns() - last_sample_time_ns > sample_interval_ns {
+            let avg_fps = t_sampler.avg_per_second();
+            println!("avg_fps={}", avg_fps);
+            last_sample_time_ns = last_sample_time_ns + sample_interval_ns;
+            t_sampler.reset();
+        }
 
         // Event loop: includes all windows
         for event in event_pump.poll_iter() {
@@ -69,48 +78,5 @@ fn main() {
                 _ => ()
             }
         }
-    }
-}
-
-struct FpsCounter {
-    n_samples: i32,
-    time_samples: Vec<u64>
-}
-
-impl FpsCounter {
-    fn new() -> FpsCounter {
-        FpsCounter {
-            n_samples: 10,
-            time_samples: Vec::new()
-        }
-    }
-
-    fn frame_time(&mut self, sample: u64) {
-        self.time_samples.insert(0, sample);
-        self.time_samples.truncate(self.n_samples as usize);
-    }
-
-    fn latest(&self) -> u64 {
-        match self.time_samples.first() {
-            Some(sample) => *sample,
-            None => 0
-        }
-    }
-
-    fn avg_ftime_ns(&self) -> u64 {
-        if self.time_samples.len() < 2 { 0 }
-        else {
-            let (sum, _) = self.time_samples.iter().rev().fold((0u64, 0u64), |sum_prev, &sample| {
-                let (sum, prev) = sum_prev;
-                if prev > 0 { (sum + (sample - prev), sample) }
-                else { (0, sample) }
-            });
-            sum / (self.time_samples.len() - 1) as u64
-        }
-    }
-
-    fn avg_fps(&self) -> u64 {
-        let ftime = self.avg_ftime_ns();
-        if ftime > 0 { 1000 / (ftime / 1000000) } else { 0 }
     }
 }
