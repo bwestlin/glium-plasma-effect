@@ -17,20 +17,20 @@ fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-    let width = 480 * 2;
-    let height = 320 * 2;
+    let b_width = 480 as u32;
+    let b_height = 320 as u32;
+    let n_pixels = b_width * b_width;
 
-    let display = video_subsystem.window("Glium Plasma", width, height)
+    let scr_width = b_width * 2;
+    let scr_height = b_height * 2;
+
+    let display = video_subsystem.window("Glium Plasma", scr_width, scr_height)
         .resizable()
         .build_glium()
         .unwrap();
 
     let mut running = true;
     let mut event_pump = sdl_context.event_pump().unwrap();
-
-    let b_width = 480 as u32;
-    let b_height = 320 as u32;
-    let n_pixels = b_width * b_width;
 
     // The renderer of the plasma effect
     let mut plasma = Plasma::new(b_width, b_height);
