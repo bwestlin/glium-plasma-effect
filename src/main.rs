@@ -3,15 +3,15 @@ extern crate glium_sdl2;
 extern crate sdl2;
 extern crate time;
 
-mod plasma;
 mod util;
+mod plasma;
 
 use glium_sdl2::DisplayBuild;
 use glium::Surface;
 use time::*;
 
+use util::*;
 use plasma::Plasma;
-use util::TimeSampler;
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -51,21 +51,27 @@ fn main() {
 
     while running {
         t_sampler.sample();
-        let mut target = display.draw();
-        target.clear_color(0.0, 0.0, 0.0, 1.0);
 
-        // Perform rendering of effect and display it on screen
-        plasma.render(&mut e_buffer, precise_time_ns() - start_time_ns);
-        p_buffer.write(&e_buffer);
-        texture.main_level().raw_upload_from_pixel_buffer(p_buffer.as_slice(), 0 .. b_width, 0 .. b_height, 0 .. 1);
-        texture.as_surface().fill(&target, glium::uniforms::MagnifySamplerFilter::Linear);
+        // Perform rendering of plasa effect
+        let render_time_ns = timed_ns(|| {
+            plasma.render(&mut e_buffer, precise_time_ns() - start_time_ns);
+        });
 
-        target.finish().unwrap();
+        // Display it on screen
+        let display_time_ns = timed_ns(|| {
+            let mut target = display.draw();
+            target.clear_color(0.0, 0.0, 0.0, 1.0);
+            p_buffer.write(&e_buffer);
+            texture.main_level().raw_upload_from_pixel_buffer(p_buffer.as_slice(), 0 .. b_width, 0 .. b_height, 0 .. 1);
+            texture.as_surface().fill(&target, glium::uniforms::MagnifySamplerFilter::Linear);
+            target.finish().unwrap();
+        });
 
         // Show some statistics
         if precise_time_ns() - last_stats_time_ns > stats_interval_ns {
             let avg_fps = t_sampler.avg_per_second();
-            println!("avg_fps={}", avg_fps);
+            println!("avg_fps={}, render_time_ms={:.5}, display_time_ms={:.1}",
+                avg_fps, render_time_ns as f64 / 1000000.0, display_time_ns as f64 / 1000000.0);
             last_stats_time_ns = last_stats_time_ns + stats_interval_ns;
             t_sampler.reset();
         }

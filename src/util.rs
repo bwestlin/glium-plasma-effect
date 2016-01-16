@@ -1,6 +1,13 @@
 use std::f64::consts::PI;
 use time::*;
 
+// Measure execution time of a given code in nanoseconds
+pub fn timed_ns<F: FnMut()>(mut closure: F) -> u64 {
+    let start = precise_time_ns();
+    closure();
+    precise_time_ns() - start
+}
+
 pub struct MathLookup {
     sin_table: Vec<f64>,
     cos_table: Vec<f64>,
