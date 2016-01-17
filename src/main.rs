@@ -46,6 +46,8 @@ fn main() {
 
     let mut t_sampler = TimeSampler::new(1000);
     let start_time_ns = precise_time_ns();
+    let mut e_timer_render = ExecutionTimer::new();
+    let mut e_timer_display = ExecutionTimer::new();
     let mut last_stats_time_ns = start_time_ns;
     let stats_interval_ns = 1000000000; // Stats interval is 1 second
 
@@ -53,12 +55,12 @@ fn main() {
         t_sampler.sample();
 
         // Perform rendering of plasa effect
-        let render_time_ns = timed_ns(|| {
+        e_timer_render.measure(|| {
             plasma.render(&mut e_buffer, precise_time_ns() - start_time_ns);
         });
 
         // Display it on screen
-        let display_time_ns = timed_ns(|| {
+        e_timer_display.measure(|| {
             let mut target = display.draw();
             target.clear_color(0.0, 0.0, 0.0, 1.0);
             p_buffer.write(&e_buffer);
@@ -70,10 +72,14 @@ fn main() {
         // Show some statistics
         if precise_time_ns() - last_stats_time_ns > stats_interval_ns {
             let avg_fps = t_sampler.avg_per_second();
-            println!("avg_fps={}, render_time_ms={:.5}, display_time_ms={:.1}",
-                avg_fps, render_time_ns as f64 / 1000000.0, display_time_ns as f64 / 1000000.0);
+            println!("avg_fps={}, render_time_ms(avg min max)=({:5.2} {:5.2} {:5.2}), display_time_ms(avg min max)=({:5.2} {:5.2} {:5.2})",
+                avg_fps,
+                e_timer_render.avg() as f64 / 1000000.0, e_timer_render.min() as f64 / 1000000.0, e_timer_render.max() as f64 / 1000000.0,
+                e_timer_display.avg() as f64 / 1000000.0, e_timer_display.min() as f64 / 1000000.0, e_timer_display.max() as f64 / 1000000.0);
             last_stats_time_ns = last_stats_time_ns + stats_interval_ns;
             t_sampler.reset();
+            e_timer_render.reset();
+            e_timer_display.reset();
         }
 
         // Event loop: includes all windows

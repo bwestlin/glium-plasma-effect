@@ -104,3 +104,52 @@ impl TimeSampler {
         if ftime > 0 { 1000 / (ftime / 1000000) } else { 0 }
     }
 }
+
+pub struct ExecutionTimer {
+    samples: Vec<u64>
+}
+
+impl ExecutionTimer {
+    /// Constructs a new `ExecutionTimer`.
+    pub fn new() -> ExecutionTimer {
+        ExecutionTimer {
+            samples: Vec::new()
+        }
+    }
+
+    // Measure execution time of a given code in nanoseconds
+    pub fn measure<F: FnMut()>(&mut self, mut closure: F) {
+        let start = precise_time_ns();
+        closure();
+        self.samples.push(precise_time_ns() - start);
+    }
+
+    /// Reset the samples
+    pub fn reset(&mut self) {
+        self.samples.clear();
+    }
+
+    /// Get the latest sample
+    pub fn latest(&self) -> u64 {
+        match self.samples.first() {
+            Some(sample) => *sample,
+            None => 0
+        }
+    }
+
+    /// Caclulate the average execution time
+    pub fn avg(&self) -> u64 {
+        if self.samples.len() == 0 { 0 }
+        else {
+            self.samples.iter().fold(0, |sum, &x| sum + x) / self.samples.len() as u64
+        }
+    }
+    /// Caclulate the minimum execution time
+    pub fn min(&self) -> u64 {
+        *(self.samples.iter().min().unwrap())
+    }
+    /// Caclulate the maximum execution time
+    pub fn max(&self) -> u64 {
+        *(self.samples.iter().max().unwrap())
+    }
+}
