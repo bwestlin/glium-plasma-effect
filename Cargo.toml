@@ -4,15 +4,10 @@ version = "0.1.0"
 authors = ["Björn Westlin <bwestlin at gmail dot com>"]
 
 [dependencies]
-glium_sdl2 = "0.8"
-sdl2 = "0.9"
+glium = "0.13"
+glium_sdl2 = "0.10"
+sdl2 = "0.13"
 rand = "0.3.12"
 time = "0.1"
-scoped_threadpool = "0.1.6"
+scoped_threadpool = "0.1.7"
 num_cpus = "0.2.10"
-
-[dependencies.glium]
-version = "0.10"
-# Remove any Glium features that you don't use
-features = ["image", "nalgebra", "cgmath"]
-default-features = false
