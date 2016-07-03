@@ -36,17 +36,17 @@ impl MathLookup {
         }
     }
 
-    /// Calculeate a sinus value using a lookup table
+    /// Calculate a sinus value using a lookup table
     pub fn sin(&self, a: f64) -> f64 {
         self.sin_table[(a * 180.0 / PI) as usize % 360]
     }
 
-    /// Calculeate a coinus value using a lookup table
+    /// Calculate a cosinus value using a lookup table
     pub fn cos(&self, a: f64) -> f64 {
         self.cos_table[(a * 180.0 / PI) as usize % 360]
     }
 
-    /// Calculeate a square root value using a lookup table
+    /// Calculate a square root value using a lookup table
     pub fn sqrt(&self, d: f64) -> f64 {
         self.sqrt_table[d as usize]
     }
@@ -85,7 +85,7 @@ impl TimeSampler {
         }
     }
 
-    /// Caclulate the average time between samples in nanoseconds
+    /// Calculate the average time between samples in nanoseconds
     pub fn avg_time_ns(&self) -> u64 {
         if self.samples.len() < 2 { 0 }
         else {
@@ -98,7 +98,7 @@ impl TimeSampler {
         }
     }
 
-    /// Caclulate the average sumber of samples per second
+    /// Calculate the average sumber of samples per second
     pub fn avg_per_second(&self) -> u64 {
         let ftime = self.avg_time_ns();
         if ftime > 0 { 1000 / (ftime / 1000000) } else { 0 }
@@ -137,18 +137,18 @@ impl ExecutionTimer {
         }
     }
 
-    /// Caclulate the average execution time
+    /// Calculate the average execution time
     pub fn avg(&self) -> u64 {
         if self.samples.len() == 0 { 0 }
         else {
             self.samples.iter().fold(0, |sum, &x| sum + x) / self.samples.len() as u64
         }
     }
-    /// Caclulate the minimum execution time
+    /// Calculate the minimum execution time
     pub fn min(&self) -> u64 {
         *(self.samples.iter().min().unwrap())
     }
-    /// Caclulate the maximum execution time
+    /// Calculate the maximum execution time
     pub fn max(&self) -> u64 {
         *(self.samples.iter().max().unwrap())
     }
